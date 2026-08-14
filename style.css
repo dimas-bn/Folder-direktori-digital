@@ -620,7 +620,7 @@ main, header, footer{position:relative; z-index:2;}
 .modal__copy-menu-title{
   font-family:var(--font-display); font-weight:600; font-size:.86rem; color:var(--text-hi);
 }
-.modal__copy-menu-desc{font-size:.74rem; color:var(--text-low);}
+.modal__copy-menu-desc{font-size:.82rem; color:var(--text-mid);}
 
 @media (max-width:640px){
   .modal__toolbar{flex-wrap:wrap;}

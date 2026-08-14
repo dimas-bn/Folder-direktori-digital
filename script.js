@@ -240,11 +240,7 @@
     var d = DATA[currentIndex];
     var lines;
     if(format === 'nama'){
-      lines = [
-        'DATA KELAS — Daftar Nama Kelas ' + d.kelas,
-        'Demo Sekolah — Tahun Ajaran Sekarang',
-        ''
-      ];
+      lines = [];
       currentVisibleList.forEach(function(s){
         lines.push(s.nama);
       });
