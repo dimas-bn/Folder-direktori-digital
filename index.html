@@ -310,20 +310,26 @@
         </div>
         <div class="modal__toolbar-actions">
           <span class="modal__count" id="modal-count">36 siswa</span>
-          <button class="modal__copy" id="modal-select-toggle" type="button" aria-pressed="false">
-            <svg class="modal__copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="4" y="4" width="16" height="16" rx="4" stroke="currentColor" stroke-width="2"/>
-              <path d="M8 12L11 15L16.5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span id="modal-select-toggle-label">Pilih Nama</span>
-          </button>
-          <button class="modal__copy" id="modal-copy" type="button">
-            <svg class="modal__copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
-              <path d="M6 15H5C3.89543 15 3 14.1046 3 13V5C3 3.89543 3.89543 3 5 3H13C14.1046 3 15 3.89543 15 5V6" stroke="currentColor" stroke-width="2"/>
-            </svg>
-            <span id="modal-copy-label">Salin Data</span>
-          </button>
+          <div class="modal__copy-wrap">
+            <button class="modal__copy" id="modal-copy" type="button" aria-haspopup="true" aria-expanded="false">
+              <svg class="modal__copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M6 15H5C3.89543 15 3 14.1046 3 13V5C3 3.89543 3.89543 3 5 3H13C14.1046 3 15 3.89543 15 5V6" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <span id="modal-copy-label">Salin Data</span>
+              <svg class="modal__copy-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="modal__copy-menu" id="modal-copy-menu" role="menu" hidden>
+              <button type="button" class="modal__copy-menu-item" role="menuitem" data-format="lengkap">
+                <span class="modal__copy-menu-title">Lengkap</span>
+                <span class="modal__copy-menu-desc">No. Presensi + Nama + Poin</span>
+              </button>
+              <button type="button" class="modal__copy-menu-item" role="menuitem" data-format="nama">
+                <span class="modal__copy-menu-title">Nama Saja</span>
+                <span class="modal__copy-menu-desc">Daftar nama polos, tanpa nomor &amp; poin</span>
+              </button>
+            </div>
+          </div>
           <button class="modal__copy" id="modal-print" type="button">
             <svg class="modal__copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M6 9V3H18V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -339,7 +345,6 @@
         <table class="modal__table" id="modal-table">
           <thead>
             <tr>
-              <th class="col-check"><input type="checkbox" id="modal-select-all" title="Pilih semua yang tampil"></th>
               <th class="col-no">No.</th>
               <th class="col-nama">Nama Siswa</th>
               <th class="col-poin" title="Rata-rata poin dari aplikasi Jurnal Mengajar">Poin</th>
@@ -350,6 +355,7 @@
         <p class="modal__empty" id="modal-empty" hidden>Tidak ada nama yang cocok.</p>
       </div>
     </div>
+
 
     <div class="modal__panel" id="panel-picker" hidden>
       <div class="picker">

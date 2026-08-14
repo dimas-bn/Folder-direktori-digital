@@ -186,11 +186,9 @@
   /* ---------------- Modal ---------------- */
   var currentIndex = 0;
   var overlay, modalTitle, modalEyebrow, tbody, countEl, emptyEl, modalSearch, copyBtn, copyLabel;
-  var selectToggleBtn, selectToggleLabel, selectAllCheckbox, modalTableEl;
+  var copyMenu;
   var currentVisibleList = [];
   var copyResetTimer = null;
-  var selectMode = false;
-  var selectedNames = {}; // { classIndex: Set(nama) }
 
   // random picker
   var tabList, tabPicker, panelList, panelPicker;
@@ -212,61 +210,6 @@
     });
   }
 
-  function getSelectedSet(){
-    var idx = currentIndex;
-    if(!selectedNames[idx]) selectedNames[idx] = {};
-    return selectedNames[idx];
-  }
-
-  function isSelected(nama){
-    var set = getSelectedSet();
-    return !!set[nama];
-  }
-
-  function toggleSelected(nama, force){
-    var set = getSelectedSet();
-    var next = (typeof force === 'boolean') ? force : !set[nama];
-    if(next){ set[nama] = true; } else { delete set[nama]; }
-    updateSelectToggleUI();
-  }
-
-  function selectedCount(){
-    var set = getSelectedSet();
-    return Object.keys(set).length;
-  }
-
-  function updateSelectToggleUI(){
-    if(!copyLabel) return;
-    if(selectMode){
-      var n = selectedCount();
-      copyLabel.textContent = n > 0 ? ('Salin (' + n + ' Terpilih)') : 'Salin Semua';
-    } else {
-      copyLabel.textContent = 'Salin Data';
-    }
-    if(selectAllCheckbox){
-      var visible = currentVisibleList;
-      var set = getSelectedSet();
-      var allChecked = visible.length > 0 && visible.every(function(s){ return !!set[s.nama]; });
-      selectAllCheckbox.checked = allChecked;
-      selectAllCheckbox.indeterminate = !allChecked && visible.some(function(s){ return !!set[s.nama]; });
-    }
-  }
-
-  function setSelectMode(on){
-    selectMode = on;
-    if(selectToggleBtn){
-      selectToggleBtn.classList.toggle('is-active', on);
-      selectToggleBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    }
-    if(selectToggleLabel) selectToggleLabel.textContent = on ? 'Batal Pilih' : 'Pilih Nama';
-    if(modalTableEl) modalTableEl.classList.toggle('select-mode', on);
-    if(!on){
-      selectedNames[currentIndex] = {};
-    }
-    resetCopyState();
-    renderModalTable(modalSearch ? modalSearch.value : '');
-  }
-
   function renderModalTable(query){
     var d = DATA[currentIndex];
     var q = (query || '').trim();
@@ -281,36 +224,42 @@
       emptyEl.hidden = false;
     } else {
       emptyEl.hidden = true;
-      var set = getSelectedSet();
       tbody.innerHTML = list.map(function(s){
         var poin = getPoin(d.kelas, s.nama);
         var poinCell = '<td class="col-poin">' +
           (poin !== null ? '<span class="poin-badge">' + formatPoin(poin) + '</span>' : '<span class="poin-badge poin-badge--empty">&ndash;</span>') +
           '</td>';
-        var checked = set[s.nama] ? ' checked' : '';
-        var checkCell = '<td class="col-check"><input type="checkbox" class="row-check" data-nama="' + escapeHtml(s.nama) + '"' + checked + '></td>';
-        return '<tr' + (set[s.nama] ? ' class="is-row-selected"' : '') + '>' + checkCell + '<td class="col-no">' + String(s.no).padStart(2,'0') + '</td><td class="col-nama">' + highlight(s.nama, q) + '</td>' + poinCell + '</tr>';
+        return '<tr><td class="col-no">' + String(s.no).padStart(2,'0') + '</td><td class="col-nama">' + highlight(s.nama, q) + '</td>' + poinCell + '</tr>';
       }).join('');
     }
     countEl.textContent = list.length + ' / ' + d.siswa.length + ' siswa';
-    updateSelectToggleUI();
+    resetCopyState();
   }
 
-  function buildCopyText(){
+  function buildCopyText(format){
     var d = DATA[currentIndex];
-    var useSelection = selectMode && selectedCount() > 0;
-    var set = getSelectedSet();
-    var source = useSelection ? currentVisibleList.filter(function(s){ return !!set[s.nama]; }) : currentVisibleList;
-    var lines = [
-      'DATA KELAS — Daftar Siswa Kelas ' + d.kelas + (useSelection ? ' (Terpilih)' : ''),
-      'Demo Sekolah — Tahun Ajaran Sekarang',
-      ''
-    ];
-    source.forEach(function(s){
-      var poin = getPoin(d.kelas, s.nama);
-      var poinText = poin !== null ? ' (Poin: ' + formatPoin(poin).replace('&ndash;','-') + ')' : '';
-      lines.push(s.no + '. ' + s.nama + poinText);
-    });
+    var lines;
+    if(format === 'nama'){
+      lines = [
+        'DATA KELAS — Daftar Nama Kelas ' + d.kelas,
+        'Demo Sekolah — Tahun Ajaran Sekarang',
+        ''
+      ];
+      currentVisibleList.forEach(function(s){
+        lines.push(s.nama);
+      });
+    } else {
+      lines = [
+        'DATA KELAS — Daftar Siswa Kelas ' + d.kelas,
+        'Demo Sekolah — Tahun Ajaran Sekarang',
+        ''
+      ];
+      currentVisibleList.forEach(function(s){
+        var poin = getPoin(d.kelas, s.nama);
+        var poinText = poin !== null ? ' (Poin: ' + formatPoin(poin).replace('&ndash;','-') + ')' : '';
+        lines.push(s.no + '. ' + s.nama + poinText);
+      });
+    }
     return lines.join('\n');
   }
 
@@ -318,24 +267,42 @@
     if(copyResetTimer) clearTimeout(copyResetTimer);
     if(copyBtn){
       copyBtn.classList.remove('is-copied');
-      updateSelectToggleUI();
+      copyLabel.textContent = 'Salin Data';
     }
   }
 
-  function copyClassData(){
-    var text = buildCopyText();
+  function closeCopyMenu(){
+    if(!copyMenu) return;
+    copyMenu.hidden = true;
+    copyBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  function openCopyMenu(){
+    if(!copyMenu) return;
+    copyMenu.hidden = false;
+    copyBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function toggleCopyMenu(){
+    if(!copyMenu) return;
+    if(copyMenu.hidden) openCopyMenu(); else closeCopyMenu();
+  }
+
+  function copyClassData(format){
+    var text = buildCopyText(format);
+    var doneLabel = format === 'nama' ? 'Nama Tersalin ✓' : 'Tersalin ✓';
     var done = function(){
       copyBtn.classList.add('is-copied');
-      copyLabel.textContent = 'Tersalin ✓';
+      copyLabel.textContent = doneLabel;
       if(copyResetTimer) clearTimeout(copyResetTimer);
       copyResetTimer = setTimeout(function(){
         copyBtn.classList.remove('is-copied');
-        updateSelectToggleUI();
+        copyLabel.textContent = 'Salin Data';
       }, 1800);
     };
     var fail = function(){
       copyLabel.textContent = 'Gagal menyalin';
-      copyResetTimer = setTimeout(function(){ updateSelectToggleUI(); }, 1800);
+      copyResetTimer = setTimeout(function(){ copyLabel.textContent = 'Salin Data'; }, 1800);
     };
 
     if(navigator.clipboard && navigator.clipboard.writeText){
@@ -548,8 +515,7 @@
     modalEyebrow.textContent = (isXII(d.kelas) ? 'SIMPUL KELAS XII' : 'SIMPUL KELAS XI');
     modalTitle.textContent = d.kelas;
     modalSearch.value = '';
-    selectedNames[index] = {};
-    setSelectMode(false);
+    closeCopyMenu();
     renderModalTable('');
     switchTab('list');
     if(spinTimer) clearTimeout(spinTimer);
@@ -566,6 +532,7 @@
   function closeModal(){
     overlay.classList.remove('is-open');
     document.body.style.overflow = '';
+    closeCopyMenu();
   }
 
   /* ---------------- Global search ---------------- */
@@ -627,10 +594,7 @@
     modalSearch = document.getElementById('modal-search');
     copyBtn = document.getElementById('modal-copy');
     copyLabel = document.getElementById('modal-copy-label');
-    selectToggleBtn = document.getElementById('modal-select-toggle');
-    selectToggleLabel = document.getElementById('modal-select-toggle-label');
-    selectAllCheckbox = document.getElementById('modal-select-all');
-    modalTableEl = document.getElementById('modal-table');
+    copyMenu = document.getElementById('modal-copy-menu');
 
     tabList = document.getElementById('tab-list');
     tabPicker = document.getElementById('tab-picker');
@@ -651,25 +615,28 @@
     pickerResetBtn.addEventListener('click', resetPicker);
     pickerNoRepeat.addEventListener('change', renderPicker);
 
-    copyBtn.addEventListener('click', copyClassData);
-
-    selectToggleBtn.addEventListener('click', function(){
-      setSelectMode(!selectMode);
+    copyBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      toggleCopyMenu();
     });
 
-    selectAllCheckbox.addEventListener('change', function(){
-      var checked = selectAllCheckbox.checked;
-      currentVisibleList.forEach(function(s){ toggleSelected(s.nama, checked); });
-      renderModalTable(modalSearch.value);
+    copyMenu.addEventListener('click', function(e){
+      var item = e.target.closest('.modal__copy-menu-item');
+      if(!item) return;
+      var format = item.getAttribute('data-format');
+      closeCopyMenu();
+      copyClassData(format);
     });
 
-    tbody.addEventListener('change', function(e){
-      var cb = e.target;
-      if(!cb.classList || !cb.classList.contains('row-check')) return;
-      var nama = cb.getAttribute('data-nama');
-      toggleSelected(nama, cb.checked);
-      var tr = cb.closest('tr');
-      if(tr) tr.classList.toggle('is-row-selected', cb.checked);
+    document.addEventListener('click', function(e){
+      if(!copyMenu || copyMenu.hidden) return;
+      if(e.target === copyBtn || copyBtn.contains(e.target)) return;
+      if(copyMenu.contains(e.target)) return;
+      closeCopyMenu();
+    });
+
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeCopyMenu();
     });
 
     document.getElementById('modal-print').addEventListener('click', printCurrentClass);
