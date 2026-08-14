@@ -620,6 +620,14 @@ main, header, footer{position:relative; z-index:2;}
 }
 .modal__table .col-no{width:56px;}
 .modal__table .col-poin{width:64px; text-align:right;}
+.modal__table .col-check{width:34px; text-align:center; padding-left:6px;}
+.modal__table .col-check{display:none;}
+.modal__table.select-mode .col-check{display:table-cell;}
+.modal__table .col-check input[type="checkbox"]{
+  width:16px; height:16px; accent-color:var(--teal); cursor:pointer;
+}
+.modal__table tbody tr.is-row-selected{background:rgba(69,232,210,.06);}
+.modal__copy.is-active{color:var(--teal); border-color:var(--teal-dim); background:var(--bg-elevated-2);}
 .modal__table tbody td{
   padding:10px 4px; border-bottom:1px solid var(--line-soft);
   font-size:.92rem;

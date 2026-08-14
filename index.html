@@ -197,7 +197,6 @@
 
   <!-- ============ TENTANG ============ -->
   <section class="section section--about" id="tentang">
-    <p class="section__eyebrow">04 &mdash; Tentang</p><br>
     <div class="about-card">
       <div class="about-card__glyph" aria-hidden="true">
         <svg viewBox="0 0 44 44" width="40" height="40">
@@ -236,7 +235,7 @@
   <!-- ============ FAQ ============ -->
   <section class="section section--faq" id="faq">
     <div class="section__head">
-      <p class="section__eyebrow">05 &mdash; FAQ</p>
+      <p class="section__eyebrow">04 &mdash; FAQ</p>
       <h2 class="section__title">Yang sering ditanyakan</h2>
     </div>
 
@@ -272,7 +271,7 @@
 
 <footer class="footer">
   <div class="footer__inner">
-    <span>&copy; <span id="footer-year"></span> DATA KELAS &mdash; Demo Aplikasi Data Kelas</span>
+    <span>&copy; <span id="footer-year"></span> DATA KELAS &mdash; Demo Aplikasi Jurnal Mengajar Online</span>
     <span class="footer__by">Dibangun oleh Dimas Bagus Nurdiansyah &middot; Guru Informatika &amp; KKA</span>
   </div>
 </footer>
@@ -311,6 +310,13 @@
         </div>
         <div class="modal__toolbar-actions">
           <span class="modal__count" id="modal-count">36 siswa</span>
+          <button class="modal__copy" id="modal-select-toggle" type="button" aria-pressed="false">
+            <svg class="modal__copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="4" width="16" height="16" rx="4" stroke="currentColor" stroke-width="2"/>
+              <path d="M8 12L11 15L16.5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="modal-select-toggle-label">Pilih Nama</span>
+          </button>
           <button class="modal__copy" id="modal-copy" type="button">
             <svg class="modal__copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -330,9 +336,10 @@
       </div>
 
       <div class="modal__table-wrap">
-        <table class="modal__table">
+        <table class="modal__table" id="modal-table">
           <thead>
             <tr>
+              <th class="col-check"><input type="checkbox" id="modal-select-all" title="Pilih semua yang tampil"></th>
               <th class="col-no">No.</th>
               <th class="col-nama">Nama Siswa</th>
               <th class="col-poin" title="Rata-rata poin dari aplikasi Jurnal Mengajar">Poin</th>
