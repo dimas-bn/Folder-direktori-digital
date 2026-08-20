@@ -265,23 +265,35 @@
       copyBtn.classList.remove('is-copied');
       copyLabel.textContent = 'Salin Data';
     }
+    if(copyMenu && copyBtn && copyBtn.getAttribute('aria-expanded') === 'true') closeCopyMenu();
   }
 
   function closeCopyMenu(){
     if(!copyMenu) return;
-    copyMenu.hidden = true;
+    copyMenu.classList.remove('is-open');
     copyBtn.setAttribute('aria-expanded', 'false');
+    setTimeout(function(){ copyMenu.hidden = true; }, 180);
   }
 
   function openCopyMenu(){
     if(!copyMenu) return;
     copyMenu.hidden = false;
+    copyMenu.classList.remove('align-left');
+    // deteksi tabrakan: kalau menu meluber ke kiri modal, geser anchor ke kiri tombol
+    var modalEl = overlay.querySelector('.modal');
+    var menuRect = copyMenu.getBoundingClientRect();
+    var modalRect = modalEl ? modalEl.getBoundingClientRect() : { left: 0 };
+    if(menuRect.left < modalRect.left + 8){
+      copyMenu.classList.add('align-left');
+    }
+    requestAnimationFrame(function(){ copyMenu.classList.add('is-open'); });
     copyBtn.setAttribute('aria-expanded', 'true');
   }
 
   function toggleCopyMenu(){
     if(!copyMenu) return;
-    if(copyMenu.hidden) openCopyMenu(); else closeCopyMenu();
+    var isOpen = copyBtn.getAttribute('aria-expanded') === 'true';
+    if(isOpen) closeCopyMenu(); else openCopyMenu();
   }
 
   function copyClassData(format){
