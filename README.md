@@ -102,16 +102,19 @@ cd datakelas
 vercel login
 vercel --prod
 ```
-Saat ditanya nama proyek, isi nama sesuai keinginan (mis. `datakelas-demo`)
-agar domain default menjadi `data-kelas.vercel.app` (jika nama tersebut
-masih tersedia).
+Setelah deploy pertama berhasil (Vercel akan kasih domain sementara berformat
+`*.vercel.app`), tambahkan domain custom `dkelas.web.id` lewat dashboard Vercel
+di **Settings → Domains** pada project ini, lalu arahkan DNS domain tersebut
+(dari penyedia domain `.web.id` kamu) sesuai instruksi yang diberikan Vercel
+(biasanya berupa CNAME atau A record).
 
 **Opsi B — lewat GitHub + dashboard Vercel**
 1. Unggah folder ini ke sebuah repository GitHub.
 2. Buka [vercel.com/new](https://vercel.com/new), pilih repo tersebut.
 3. Framework Preset: pilih **Other** (situs statis, tanpa build command).
 4. Klik **Deploy**.
-5. Di **Settings → Domains**, atur domain sesuai kebutuhan.
+5. Di **Settings → Domains**, tambahkan `dkelas.web.id` dan ikuti instruksi
+   pengaturan DNS-nya.
 
 ## Cara memperbarui data siswa
 
